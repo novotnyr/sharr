@@ -1,0 +1,33 @@
+#!/bin/sh
+. ./sharr.sh
+
+IMAGES_GLOB='./test/resources/*.png'
+
+I=0
+for IMAGE in $IMAGES_GLOB
+do
+  PREVIOUS_INDEX="$(arr_previous_index "$I" "$IMAGES_GLOB")"
+  if [ 0 -le "$PREVIOUS_INDEX" ]
+  then
+    PREVIOUS="<a href='$(arr_element_at "$PREVIOUS_INDEX" "$IMAGES_GLOB")'>PREVIOUS</a>"
+  else
+    PREVIOUS=''
+  fi
+
+  NEXT_INDEX="$(arr_next_index "$I" "$IMAGES_GLOB")"
+  if [ 0 -le "$NEXT_INDEX" ]
+  then
+    NEXT="<a href='$(arr_element_at "$NEXT_INDEX" "$IMAGES_GLOB")'>NEXT</a>"
+  else
+    NEXT=''
+  fi
+
+  cat > ${IMAGE%.jpg}.html << ----
+<h1>$(basename $IMAGE)</h1>
+<img src="$IMAGE" />
+
+$PREVIOUS
+$NEXT
+----
+: "$(( I = I + 1 ))"
+done

@@ -1,0 +1,65 @@
+#!/bin/sh
+# file: ../../sharr.sh
+
+testArrPrev() {
+	RESULT=$(arr_prev 1 00 01 02 03 04 05)
+	assertEquals "Previous element $RESULT is wrong" 00 "$RESULT"
+
+	RESULT=$(arr_prev 0 00 01 02)
+	assertEquals "There should be no previous element" -1 "$RESULT"
+
+	INDEX_OUT_OF_BOUNDS=$(arr_prev 1 00)
+	assertEquals "There is no out-of-bounds indication" -1 "$INDEX_OUT_OF_BOUNDS"
+}
+
+
+testArrNext() {
+	RESULT=$(arr_next 2 00 01 02 03 04 05)
+	assertEquals "Next element $RESULT is wrong" 03 "$RESULT"
+
+	RESULT=$(arr_next 2 00 01 02)
+	assertEquals "There should be no next element" -1 "$RESULT"
+
+	INDEX_OUT_OF_BOUNDS=$(arr_next 1 00)
+	assertEquals "There should be no next element" -1 "$INDEX_OUT_OF_BOUNDS"
+}
+
+testArrPreviousIndex() {
+  RESULT=$(arr_previous_index 1 "00 01 02")
+  assertEquals "Previous element $RESULT is wrong" 0 "$RESULT"
+
+  RESULT=$(arr_previous_index 0 "00 01 02")
+  assertEquals "Previous element $RESULT is wrong" -1 "$RESULT"
+
+  RESULT=$(arr_previous_index 5 "00 01 02")
+  assertEquals "Previous element $RESULT is wrong" -1 "$RESULT"
+}
+
+testArrNextIndex() {
+  RESULT=$(arr_next_index 1 "00 01 02")
+  assertEquals "Next element $RESULT is wrong" 2 "$RESULT"
+
+  RESULT=$(arr_next_index 2 "00 01 02")
+  assertEquals "Next element $RESULT is wrong" -1 "$RESULT"
+
+  RESULT=$(arr_next_index 5 "00 01 02")
+  assertEquals "Next element $RESULT is wrong" -1 "$RESULT"
+}
+
+testArrElementAt() {
+  RESULT=$(arr_element_at 1 "00 01 02")
+  assertEquals "Element at index 1 is wrong" 01 "$RESULT"
+
+  EXIT_STATUS=0
+  RESULT=$(arr_element_at 5 "00 01 02"); EXIT_STATUS="$?"
+  assertEquals "Element at illegal index is wrong" '' "$RESULT"
+  assertEquals "Exit status is wrong $EXIT_STATUS" 1 "$EXIT_STATUS"
+}
+
+oneTimeSetUp() {
+  . ../../sharr.sh
+}
+
+# Load shUnit2.
+SHUNIT2_HOME=$(brew info shunit2 | awk 'NR == 4 { print $1 }')
+. "$SHUNIT2_HOME/bin/shunit2"
