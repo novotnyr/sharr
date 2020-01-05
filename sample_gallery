@@ -1,33 +1,22 @@
 #!/bin/sh
 . ./sharr.sh
 
-IMAGES_GLOB='./test/resources/*.png'
+images_glob='./test/resources/*.jpg'
 
-I=0
-for IMAGE in $IMAGES_GLOB
+i=0
+for image in ${images_glob}
 do
-  PREVIOUS_INDEX="$(arr_previous_index "$I" "$IMAGES_GLOB")"
-  if [ 0 -le "$PREVIOUS_INDEX" ]
-  then
-    PREVIOUS="<a href='$(arr_element_at "$PREVIOUS_INDEX" "$IMAGES_GLOB")'>PREVIOUS</a>"
-  else
-    PREVIOUS=''
-  fi
+	# shellcheck disable=SC2086
+	prev_image="$(arr_prev "$i" ${images_glob})" && previous="<a href='${prev_image}'>previous</a>"
+  # shellcheck disable=SC2086
+	next_image="$(arr_next "$i" ${images_glob})" && next="<a href='${next_image}'>next</a>"
 
-  NEXT_INDEX="$(arr_next_index "$I" "$IMAGES_GLOB")"
-  if [ 0 -le "$NEXT_INDEX" ]
-  then
-    NEXT="<a href='$(arr_element_at "$NEXT_INDEX" "$IMAGES_GLOB")'>NEXT</a>"
-  else
-    NEXT=''
-  fi
+	cat > ${image%.jpg}.html <<- ----
+		<h1>$(basename ${image})</h1>
+		<img src='${image}' />
 
-  cat > ${IMAGE%.jpg}.html << ----
-<h1>$(basename $IMAGE)</h1>
-<img src="$IMAGE" />
-
-$PREVIOUS
-$NEXT
+		${previous}
+		${next}
 ----
-: "$(( I = I + 1 ))"
+	: "$((i=i+1))"
 done
